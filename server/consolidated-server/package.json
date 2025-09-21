@@ -10,6 +10,10 @@
     "build": "npm install --production",
     "health": "node src/health-check.js"
   },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
   "keywords": ["design", "canvas", "api", "backend", "subscription", "upload"],
   "author": "Mocko Designs Team",
   "license": "MIT",
@@ -34,9 +38,5 @@
     "nodemon": "^3.1.9",
     "jest": "^29.7.0",
     "supertest": "^7.0.0"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
   }
 }
