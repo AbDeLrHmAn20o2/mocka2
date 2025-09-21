@@ -178,25 +178,25 @@ function Header() {
 
   const handleZoomIn = () => {
     if (!canvas || !canvas.wrapperEl) return;
-    
+
     const currentZoom = canvas.zoomLevel || 1;
     const newZoom = Math.min(currentZoom * 1.2, 3); // Max 300% zoom
-    
+
     applyCanvasZoom(canvas, newZoom);
   };
 
   const handleZoomOut = () => {
     if (!canvas || !canvas.wrapperEl) return;
-    
+
     const currentZoom = canvas.zoomLevel || 1;
     const newZoom = Math.max(currentZoom / 1.2, 0.1); // Min 10% zoom
-    
+
     applyCanvasZoom(canvas, newZoom);
   };
 
   const handleZoomFit = () => {
     if (!canvas || !canvas.wrapperEl) return;
-    
+
     const container = canvas.wrapperEl.parentElement;
     if (container) {
       resetAndFitCanvas(canvas, container);
@@ -326,7 +326,7 @@ function Header() {
                 >
                   <Redo className="w-5 h-5 text-slate-600" />
                 </button>
-                
+
                 {/* Zoom controls */}
                 <div className="flex items-center space-x-1 px-2 py-1 bg-slate-50 rounded-xl border border-slate-200">
                   <button
