@@ -106,7 +106,6 @@ export const useEditorStore = create((set, get) => ({
         lastSaved: Date.now(),
         saveError: null,
       });
-
     } catch (error) {
       console.error("Auto-save failed:", error);
       set({

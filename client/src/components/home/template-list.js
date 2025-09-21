@@ -38,10 +38,10 @@ function TemplateList({
   const { userSubscription, userDesigns } = useEditorStore();
 
   // Use dynamic templates hook
-  const { 
-    templates: customTemplates, 
-    loading: templatesLoading, 
-    error: templatesError
+  const {
+    templates: customTemplates,
+    loading: templatesLoading,
+    error: templatesError,
   } = useTemplates();
 
   const isUserPremium = isPremiumUser(userSubscription);
@@ -165,7 +165,9 @@ function TemplateList({
       <div className="flex flex-col items-center justify-center py-12">
         <div className="text-slate-500 text-center">
           <p className="text-lg mb-2">No templates available</p>
-          <p className="text-sm">Add JSON template files to /public/examples/ folder</p>
+          <p className="text-sm">
+            Add JSON template files to /public/examples/ folder
+          </p>
         </div>
       </div>
     );
@@ -185,46 +187,46 @@ function TemplateList({
               >
                 {/* Template Preview */}
                 <div className="aspect-[4/3] bg-white flex items-center justify-center relative overflow-hidden border-b border-slate-100 p-3">
-                <TemplatePreview
-                  key={`${template.id}-preview-${
-                    isModalView ? "modal" : "home"
-                  }`}
-                  templateFile={template.fileName}
-                  width={template.width}
-                  height={template.height}
-                  className="w-full h-full"
-                  context={isModalView ? "modal" : "home"}
-                  isPremium={template.isPremium}
-                />
+                  <TemplatePreview
+                    key={`${template.id}-preview-${
+                      isModalView ? "modal" : "home"
+                    }`}
+                    templateFile={template.fileName}
+                    width={template.width}
+                    height={template.height}
+                    className="w-full h-full"
+                    context={isModalView ? "modal" : "home"}
+                    isPremium={template.isPremium}
+                  />
 
-                {/* Loading overlay */}
-                {loadingTemplate === template.id && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                    <LoadingSpinner size="md" className="text-white" />
-                  </div>
-                )}
-
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-purple-900/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
-
-              {/* Template Info */}
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="font-semibold text-slate-800 text-sm group-hover:text-purple-600 transition-colors">
-                    {template.name}
-                  </h3>
-                  {template.isPremium && (
-                    <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs px-2 py-1 rounded-full">
-                      PRO
-                    </span>
+                  {/* Loading overlay */}
+                  {loadingTemplate === template.id && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                      <LoadingSpinner size="md" className="text-white" />
+                    </div>
                   )}
+
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-purple-900/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
-                <p className="text-xs text-slate-500">
-                  {template.width} × {template.height}
-                </p>
+
+                {/* Template Info */}
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-1">
+                    <h3 className="font-semibold text-slate-800 text-sm group-hover:text-purple-600 transition-colors">
+                      {template.name}
+                    </h3>
+                    {template.isPremium && (
+                      <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs px-2 py-1 rounded-full">
+                        PRO
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-500">
+                    {template.width} × {template.height}
+                  </p>
+                </div>
               </div>
-            </div>
             );
           })}
         </div>

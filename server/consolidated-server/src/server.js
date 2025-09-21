@@ -11,6 +11,7 @@ const designRoutes = require("./routes/design-routes");
 const uploadRoutes = require("./routes/upload-routes");
 const subscriptionRoutes = require("./routes/subscription-routes");
 const healthRoutes = require("./routes/health-routes");
+const paypalTestRoutes = require("./routes/paypal-test-routes");
 
 // Import middleware
 const errorHandler = require("./middleware/error-handler");
@@ -188,6 +189,9 @@ app.set("trust proxy", 1);
 // Health check endpoint (should be before authentication)
 app.use("/health", healthRoutes);
 app.use("/api/health", healthRoutes);
+
+// PayPal test endpoint (for debugging)
+app.use("/paypal", paypalTestRoutes);
 
 // Primary API routes (what frontend expects)
 app.use("/v1/designs", designRoutes);

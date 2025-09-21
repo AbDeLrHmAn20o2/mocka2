@@ -5,26 +5,32 @@
 I've created the necessary Docker files for your Back4App deployment:
 
 ### Files Created:
+
 1. **`server/consolidated-server/Dockerfile`** - Container configuration
 2. **`server/consolidated-server/.dockerignore`** - Files to exclude from container
 
 ## 🚀 Back4App Deployment Steps (Updated)
 
 ### 1. Access Back4App Dashboard
+
 - Log into your Back4App account
 - Create a new app or select existing app
 
 ### 2. Choose Container Deployment
+
 - Go to **"Server Settings"** → **"Container App"** (not Web Hosting)
 - This is specifically for Docker-based deployments
 
 ### 3. Connect GitHub Repository
+
 - Connect your repository: `https://github.com/AbDeLrHmAn20o2/mocka2.git`
 - Set root directory: `server/consolidated-server`
 - Back4App will automatically detect the Dockerfile
 
 ### 4. Configure Environment Variables
+
 Set these environment variables in Back4App dashboard:
+
 ```
 NODE_ENV=production
 PORT=1337
@@ -42,7 +48,8 @@ JWT_SECRET=your_jwt_secret_key
 ```
 
 ### 5. Deploy
-- Click **"Deploy"** 
+
+- Click **"Deploy"**
 - Back4App will build your Docker container and deploy it
 - Wait for the build to complete
 - Your backend will be available at: `https://your-app.back4app.io`
@@ -56,6 +63,7 @@ JWT_SECRET=your_jwt_secret_key
 - **Environment**: Sets NODE_ENV=production
 
 ## 🔧 Docker File Structure:
+
 ```
 server/consolidated-server/
 ├── Dockerfile          # Container configuration (fixed npm install issue)
@@ -66,6 +74,7 @@ server/consolidated-server/
 ```
 
 ## ⚠️ Issue Fixed:
+
 - **Problem**: `npm ci` failed because package-lock.json was not available in container
 - **Solution**: Changed to `npm install --only=production` for better Docker compatibility
 - **Status**: ✅ Fixed and pushed to GitHub

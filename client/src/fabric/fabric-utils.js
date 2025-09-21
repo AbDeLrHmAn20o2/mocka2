@@ -14,37 +14,43 @@ const waitForContainerReady = (containerEl) => {
 
     const checkContainer = () => {
       if (!containerEl) {
-        console.log('Container element not found, using fallback dimensions');
+        console.log("Container element not found, using fallback dimensions");
         resolve({ width: 800, height: 600 }); // fallback
         return;
       }
 
       const rect = containerEl.getBoundingClientRect();
       const computedStyle = window.getComputedStyle(containerEl);
-      
-      console.log('Checking container readiness:', {
+
+      console.log("Checking container readiness:", {
         rect: { width: rect.width, height: rect.height },
-        client: { width: containerEl.clientWidth, height: containerEl.clientHeight },
-        visibility: computedStyle.visibility,
-        display: computedStyle.display
-      });
-      
-      // Check if container has proper dimensions and is visible
-      if (rect.width > 0 && rect.height > 0 && 
-          computedStyle.visibility !== 'hidden' && 
-          computedStyle.display !== 'none') {
-        console.log('Container is ready:', {
+        client: {
           width: containerEl.clientWidth,
-          height: containerEl.clientHeight
+          height: containerEl.clientHeight,
+        },
+        visibility: computedStyle.visibility,
+        display: computedStyle.display,
+      });
+
+      // Check if container has proper dimensions and is visible
+      if (
+        rect.width > 0 &&
+        rect.height > 0 &&
+        computedStyle.visibility !== "hidden" &&
+        computedStyle.display !== "none"
+      ) {
+        console.log("Container is ready:", {
+          width: containerEl.clientWidth,
+          height: containerEl.clientHeight,
         });
         resolve({
           width: containerEl.clientWidth,
           height: containerEl.clientHeight,
-          rect: rect
+          rect: rect,
         });
       } else {
         // Container not ready, check again after a short delay
-        console.log('Container not ready, checking again in 50ms');
+        console.log("Container not ready, checking again in 50ms");
         setTimeout(checkContainer, 50);
       }
     };
@@ -59,12 +65,12 @@ export const initializeFabric = async (canvasEl, containerEl) => {
     const { Canvas, PencilBrush } = await import("fabric");
 
     // Wait for container to be properly measured before canvas initialization
-    console.log('Waiting for container to be ready...');
+    console.log("Waiting for container to be ready...");
     const containerInfo = await waitForContainerReady(containerEl);
-    console.log('Container ready with dimensions:', containerInfo);
+    console.log("Container ready with dimensions:", containerInfo);
 
     // Additional wait to ensure DOM is fully stable
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
     const canvas = new Canvas(canvasEl, {
       preserveObjectStacking: true,
@@ -90,20 +96,20 @@ export const initializeFabric = async (canvasEl, containerEl) => {
     // Configure canvas for high-quality rendering on all devices
     const devicePixelRatio = window.devicePixelRatio || 1;
     const context = canvas.getContext();
-    
+
     // Always enable high-quality rendering
     context.imageSmoothingEnabled = true;
-    context.imageSmoothingQuality = 'high';
-    
+    context.imageSmoothingQuality = "high";
+
     // For high-DPI displays, ensure crisp rendering
     if (devicePixelRatio > 1) {
       // Set canvas to render at device resolution
       const canvasEl = canvas.getElement();
-      canvasEl.style.imageRendering = 'auto';
-      canvasEl.style.imageRendering = '-webkit-optimize-contrast';
-      canvasEl.style.imageRendering = 'crisp-edges';
-      canvasEl.style.imageRendering = 'pixelated';
-      canvasEl.style.imageRendering = 'auto'; // Reset to auto for best quality
+      canvasEl.style.imageRendering = "auto";
+      canvasEl.style.imageRendering = "-webkit-optimize-contrast";
+      canvasEl.style.imageRendering = "crisp-edges";
+      canvasEl.style.imageRendering = "pixelated";
+      canvasEl.style.imageRendering = "auto"; // Reset to auto for best quality
     }
 
     //drawing init
@@ -115,10 +121,10 @@ export const initializeFabric = async (canvasEl, containerEl) => {
     // Initialize zoom level using Fabric.js for crisp rendering
     canvas.setZoom(1);
     canvas.zoomLevel = 1;
-    
+
     setTimeout(() => {
       centerCanvas(canvas, false);
-      
+
       // Enable mouse interactions after centering
       setTimeout(() => {
         const cleanup = enableCanvasMouseInteractions(canvas);
@@ -150,87 +156,88 @@ export const centerCanvas = (canvas, preserveZoom = false) => {
     const viewportHeight = container.clientHeight;
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
-    
+
     // Get current zoom level
-    const zoomLevel = (preserveZoom && canvas.zoomLevel) ? canvas.zoomLevel : 1;
-    
+    const zoomLevel = preserveZoom && canvas.zoomLevel ? canvas.zoomLevel : 1;
+
     // Calculate scaled dimensions for container layout
     const scaledCanvasWidth = canvasWidth * zoomLevel;
     const scaledCanvasHeight = canvasHeight * zoomLevel;
-    
+
     // Calculate container content dimensions with generous padding
     const paddingWidth = Math.max(400, viewportWidth * 0.5);
     const paddingHeight = Math.max(300, viewportHeight * 0.5);
-    
+
     const contentWidth = scaledCanvasWidth + paddingWidth;
     const contentHeight = scaledCanvasHeight + paddingHeight;
-    
+
     // Ensure container can scroll to accommodate canvas with padding
-    container.style.position = 'relative';
-    container.style.overflow = 'auto';
-    
+    container.style.position = "relative";
+    container.style.overflow = "auto";
+
     // Create or update phantom container for proper scroll dimensions
-    let phantomContainer = container.querySelector('.canvas-phantom-container');
+    let phantomContainer = container.querySelector(".canvas-phantom-container");
     if (!phantomContainer) {
-      phantomContainer = document.createElement('div');
-      phantomContainer.className = 'canvas-phantom-container';
-      phantomContainer.style.position = 'absolute';
-      phantomContainer.style.top = '0';
-      phantomContainer.style.left = '0';
-      phantomContainer.style.pointerEvents = 'none';
-      phantomContainer.style.visibility = 'hidden';
+      phantomContainer = document.createElement("div");
+      phantomContainer.className = "canvas-phantom-container";
+      phantomContainer.style.position = "absolute";
+      phantomContainer.style.top = "0";
+      phantomContainer.style.left = "0";
+      phantomContainer.style.pointerEvents = "none";
+      phantomContainer.style.visibility = "hidden";
       container.appendChild(phantomContainer);
     }
-    
+
     // Set phantom container size to match scaled content
     phantomContainer.style.width = `${contentWidth}px`;
     phantomContainer.style.height = `${contentHeight}px`;
-    
+
     // Set wrapper positioning to center within the scrollable content
-    canvasWrapper.style.position = 'absolute';
+    canvasWrapper.style.position = "absolute";
     canvasWrapper.style.left = `${paddingWidth / 2}px`;
     canvasWrapper.style.top = `${paddingHeight / 2}px`;
-    
+
     // Apply zoom transform if present
-    canvasWrapper.style.transform = zoomLevel !== 1 ? `scale(${zoomLevel})` : 'none';
-    
+    canvasWrapper.style.transform =
+      zoomLevel !== 1 ? `scale(${zoomLevel})` : "none";
+
     if (zoomLevel !== 1) {
-      canvasWrapper.style.transformOrigin = 'center center';
+      canvasWrapper.style.transformOrigin = "center center";
       // Anti-aliasing for zoom
-      canvasWrapper.style.imageRendering = 'crisp-edges';
-      canvasWrapper.style.backfaceVisibility = 'hidden';
+      canvasWrapper.style.imageRendering = "crisp-edges";
+      canvasWrapper.style.backfaceVisibility = "hidden";
     }
-    
+
     // Create or update a content spacer to define the scrollable area
-    let spacer = container.querySelector('.canvas-spacer');
+    let spacer = container.querySelector(".canvas-spacer");
     if (!spacer) {
-      spacer = document.createElement('div');
-      spacer.className = 'canvas-spacer';
-      spacer.style.position = 'absolute';
-      spacer.style.pointerEvents = 'none';
-      spacer.style.zIndex = '-1';
+      spacer = document.createElement("div");
+      spacer.className = "canvas-spacer";
+      spacer.style.position = "absolute";
+      spacer.style.pointerEvents = "none";
+      spacer.style.zIndex = "-1";
       container.appendChild(spacer);
     }
-    
+
     spacer.style.width = `${contentWidth}px`;
     spacer.style.height = `${contentHeight}px`;
-    spacer.style.left = '0px';
-    spacer.style.top = '0px';
-    
+    spacer.style.left = "0px";
+    spacer.style.top = "0px";
+
     // Center the scroll position immediately for better UX
     const targetScrollLeft = Math.max(0, (contentWidth - viewportWidth) / 2);
     const targetScrollTop = Math.max(0, (contentHeight - viewportHeight) / 2);
-    
+
     // Apply centering immediately without setTimeout for smoother experience
     container.scrollLeft = targetScrollLeft;
     container.scrollTop = targetScrollTop;
-    
+
     // Force a second centering after a small delay to ensure precision
     setTimeout(() => {
       container.scrollLeft = targetScrollLeft;
       container.scrollTop = targetScrollTop;
     }, 25);
-    
+
     if (!preserveZoom) {
       canvas.zoomLevel = 1;
     }
@@ -246,7 +253,7 @@ export const centerCanvasAfterLoad = (canvas) => {
   // Wait for DOM to settle before centering
   setTimeout(() => {
     centerCanvas(canvas, false);
-    
+
     // Additional delay for smooth scroll behavior
     setTimeout(() => {
       const container = canvas.wrapperEl.parentElement;
@@ -256,14 +263,17 @@ export const centerCanvasAfterLoad = (canvas) => {
         const viewportHeight = container.clientHeight;
         const scrollWidth = container.scrollWidth;
         const scrollHeight = container.scrollHeight;
-        
+
         const targetScrollLeft = Math.max(0, (scrollWidth - viewportWidth) / 2);
-        const targetScrollTop = Math.max(0, (scrollHeight - viewportHeight) / 2);
-        
+        const targetScrollTop = Math.max(
+          0,
+          (scrollHeight - viewportHeight) / 2
+        );
+
         container.scrollTo({
           left: targetScrollLeft,
           top: targetScrollTop,
-          behavior: 'smooth'
+          behavior: "smooth",
         });
       }
     }, 100);
@@ -275,34 +285,40 @@ export const centerCanvasAfterLoad = (canvas) => {
  */
 export const forceCenterCanvas = (canvas) => {
   if (!canvas || !canvas.wrapperEl) {
-    console.warn('Cannot center canvas: canvas or wrapper element not available');
+    console.warn(
+      "Cannot center canvas: canvas or wrapper element not available"
+    );
     return;
   }
 
   const container = canvas.wrapperEl.parentElement;
   if (!container) {
-    console.warn('Cannot center canvas: container element not found');
+    console.warn("Cannot center canvas: container element not found");
     return;
   }
 
-  console.log(`Forcing canvas center for ${canvas.width}x${canvas.height} canvas`);
-  
+  console.log(
+    `Forcing canvas center for ${canvas.width}x${canvas.height} canvas`
+  );
+
   // Apply centering immediately without delays
   centerCanvas(canvas, false);
-  
+
   // Force scroll to center immediately
   const viewportWidth = container.clientWidth;
   const viewportHeight = container.clientHeight;
   const scrollWidth = container.scrollWidth;
   const scrollHeight = container.scrollHeight;
-  
+
   const targetScrollLeft = Math.max(0, (scrollWidth - viewportWidth) / 2);
   const targetScrollTop = Math.max(0, (scrollHeight - viewportHeight) / 2);
-  
+
   container.scrollLeft = targetScrollLeft;
   container.scrollTop = targetScrollTop;
-  
-  console.log(`Canvas centered - scroll to ${targetScrollLeft}, ${targetScrollTop}`);
+
+  console.log(
+    `Canvas centered - scroll to ${targetScrollLeft}, ${targetScrollTop}`
+  );
 };
 
 /**
@@ -311,7 +327,9 @@ export const forceCenterCanvas = (canvas) => {
  */
 export const ensureCanvasVisible = (canvas) => {
   if (!canvas || !canvas.wrapperEl) {
-    console.warn('Cannot ensure canvas visibility: canvas or wrapper element not available');
+    console.warn(
+      "Cannot ensure canvas visibility: canvas or wrapper element not available"
+    );
     return;
   }
 
@@ -351,14 +369,14 @@ export const enableCanvasMouseInteractions = (canvas) => {
 
   const wrapper = canvas.wrapperEl;
   const container = wrapper.parentElement;
-  
+
   if (!container) return;
 
   // Mouse wheel zoom configuration
   const minZoom = 0.1;
   const maxZoom = 5.0;
   const zoomStep = 0.1;
-  
+
   // Drag state
   let isDragging = false;
   let dragStart = { x: 0, y: 0 };
@@ -367,40 +385,40 @@ export const enableCanvasMouseInteractions = (canvas) => {
   // Mouse wheel zoom handler - DISABLED to allow normal page scrolling
   // const handleWheel = (e) => {
   //   e.preventDefault();
-  //   
+  //
   //   if (!canvas.zoomLevel) canvas.zoomLevel = 1;
-  //   
+  //
   //   const delta = e.deltaY > 0 ? -zoomStep : zoomStep;
   //   const newZoom = Math.min(Math.max(canvas.zoomLevel + delta, minZoom), maxZoom);
-  //   
+  //
   //   if (newZoom !== canvas.zoomLevel) {
   //     // Get mouse position relative to container
   //     const rect = container.getBoundingClientRect();
   //     const mouseX = e.clientX - rect.left;
   //     const mouseY = e.clientY - rect.top;
-  //     
+  //
   //     // Calculate current center point in the scrollable content
   //     const currentCenterX = container.scrollLeft + mouseX;
   //     const currentCenterY = container.scrollTop + mouseY;
-  //     
+  //
   //     // Store old zoom for ratio calculation
   //     const oldZoom = canvas.zoomLevel;
-  //     
+  //
   //     // Apply new zoom
   //     applyCanvasZoom(canvas, newZoom);
-  //     
+  //
   //     // Calculate how much the content size changed
   //     const zoomRatio = newZoom / oldZoom;
-  //     
+  //
   //     // Adjust scroll position to keep the mouse point centered
   //     setTimeout(() => {
   //       const newCenterX = currentCenterX * zoomRatio;
   //       const newCenterY = currentCenterY * zoomRatio;
-  //       
+  //
   //       container.scrollLeft = Math.max(0, newCenterX - mouseX);
   //       container.scrollTop = Math.max(0, newCenterY - mouseY);
   //     }, 10);
-  //     
+  //
   //     console.log(`Wheel zoom: ${newZoom.toFixed(2)}`);
   //   }
   // };
@@ -411,20 +429,21 @@ export const enableCanvasMouseInteractions = (canvas) => {
     if (canvas && canvas.isDrawingMode) {
       return;
     }
-    
+
     // Allow dragging if clicking on container background, canvas wrapper, or empty canvas area
-    const isClickableArea = 
-      e.target === container || 
-      e.target === wrapper || 
-      (e.target.tagName === 'CANVAS' && (!canvas.getActiveObject() || e.ctrlKey || e.metaKey));
-    
+    const isClickableArea =
+      e.target === container ||
+      e.target === wrapper ||
+      (e.target.tagName === "CANVAS" &&
+        (!canvas.getActiveObject() || e.ctrlKey || e.metaKey));
+
     if (isClickableArea) {
       isDragging = true;
       dragStart = { x: e.clientX, y: e.clientY };
       scrollStart = { left: container.scrollLeft, top: container.scrollTop };
-      
-      container.style.cursor = 'grabbing';
-      document.body.style.userSelect = 'none'; // Prevent text selection during drag
+
+      container.style.cursor = "grabbing";
+      document.body.style.userSelect = "none"; // Prevent text selection during drag
       e.preventDefault();
     }
   };
@@ -435,25 +454,31 @@ export const enableCanvasMouseInteractions = (canvas) => {
     if (canvas && canvas.isDrawingMode) {
       return;
     }
-    
+
     if (!isDragging) return;
 
     const deltaX = e.clientX - dragStart.x;
     const deltaY = e.clientY - dragStart.y;
-    
+
     // Calculate new scroll positions with boundaries check
-    const newScrollLeft = Math.max(0, Math.min(
-      container.scrollWidth - container.clientWidth, 
-      scrollStart.left - deltaX
-    ));
-    const newScrollTop = Math.max(0, Math.min(
-      container.scrollHeight - container.clientHeight, 
-      scrollStart.top - deltaY
-    ));
-    
+    const newScrollLeft = Math.max(
+      0,
+      Math.min(
+        container.scrollWidth - container.clientWidth,
+        scrollStart.left - deltaX
+      )
+    );
+    const newScrollTop = Math.max(
+      0,
+      Math.min(
+        container.scrollHeight - container.clientHeight,
+        scrollStart.top - deltaY
+      )
+    );
+
     container.scrollLeft = newScrollLeft;
     container.scrollTop = newScrollTop;
-    
+
     e.preventDefault();
   };
 
@@ -462,53 +487,54 @@ export const enableCanvasMouseInteractions = (canvas) => {
     // Always handle mouse up to reset state, regardless of drawing mode
     if (isDragging) {
       isDragging = false;
-      container.style.cursor = 'default';
-      document.body.style.userSelect = ''; // Restore text selection
+      container.style.cursor = "default";
+      document.body.style.userSelect = ""; // Restore text selection
     }
   };
 
   // Keyboard handler for canvas movement
   const handleKeyDown = (e) => {
     // Only handle keys when canvas container has focus or no input is active
-    const isInputActive = document.activeElement && 
-      (document.activeElement.tagName === 'INPUT' || 
-       document.activeElement.tagName === 'TEXTAREA' || 
-       document.activeElement.contentEditable === 'true');
-    
+    const isInputActive =
+      document.activeElement &&
+      (document.activeElement.tagName === "INPUT" ||
+        document.activeElement.tagName === "TEXTAREA" ||
+        document.activeElement.contentEditable === "true");
+
     if (isInputActive) return;
-    
+
     const moveStep = 50; // pixels to move
     let moved = false;
-    
+
     switch (e.key) {
-      case 'ArrowLeft':
+      case "ArrowLeft":
         // Left arrow should move canvas view left (scroll right)
         container.scrollLeft = Math.min(
-          container.scrollWidth - container.clientWidth, 
+          container.scrollWidth - container.clientWidth,
           container.scrollLeft + moveStep
         );
         moved = true;
         break;
-      case 'ArrowRight':
+      case "ArrowRight":
         // Right arrow should move canvas view right (scroll left)
         container.scrollLeft = Math.max(0, container.scrollLeft - moveStep);
         moved = true;
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         // Up arrow should move canvas view up (scroll down)
         container.scrollTop = Math.min(
-          container.scrollHeight - container.clientHeight, 
+          container.scrollHeight - container.clientHeight,
           container.scrollTop + moveStep
         );
         moved = true;
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         // Down arrow should move canvas view down (scroll up)
         container.scrollTop = Math.max(0, container.scrollTop - moveStep);
         moved = true;
         break;
     }
-    
+
     if (moved) {
       e.preventDefault();
     }
@@ -516,20 +542,20 @@ export const enableCanvasMouseInteractions = (canvas) => {
 
   // Add event listeners (wheel listener disabled for normal page scrolling)
   // container.addEventListener('wheel', handleWheel, { passive: false });
-  container.addEventListener('mousedown', handleMouseDown);
-  container.addEventListener('mousemove', handleMouseMove);
-  container.addEventListener('mouseup', handleMouseUp);
-  container.addEventListener('mouseleave', handleMouseUp); // Stop drag if mouse leaves container
-  document.addEventListener('keydown', handleKeyDown);
+  container.addEventListener("mousedown", handleMouseDown);
+  container.addEventListener("mousemove", handleMouseMove);
+  container.addEventListener("mouseup", handleMouseUp);
+  container.addEventListener("mouseleave", handleMouseUp); // Stop drag if mouse leaves container
+  document.addEventListener("keydown", handleKeyDown);
 
   // Return cleanup function
   return () => {
     // container.removeEventListener('wheel', handleWheel);
-    container.removeEventListener('mousedown', handleMouseDown);
-    container.removeEventListener('mousemove', handleMouseMove);
-    container.removeEventListener('mouseup', handleMouseUp);
-    container.removeEventListener('mouseleave', handleMouseUp);
-    document.removeEventListener('keydown', handleKeyDown);
+    container.removeEventListener("mousedown", handleMouseDown);
+    container.removeEventListener("mousemove", handleMouseMove);
+    container.removeEventListener("mouseup", handleMouseUp);
+    container.removeEventListener("mouseleave", handleMouseUp);
+    document.removeEventListener("keydown", handleKeyDown);
   };
 };
 
@@ -541,24 +567,28 @@ export const calculateOptimalZoom = (canvas, containerEl) => {
 
   const canvasWidth = canvas.width;
   const canvasHeight = canvas.height;
-  
+
   // Get available space (subtract space for sidebars, headers, etc.)
   const availableWidth = window.innerWidth - 400; // Account for sidebars
   const availableHeight = window.innerHeight - 150; // Account for header/footer
-  
+
   // Calculate container space
   const containerWidth = containerEl.clientWidth || availableWidth;
   const containerHeight = containerEl.clientHeight || availableHeight;
-  
+
   // Calculate zoom ratios for both dimensions
-  const zoomX = Math.min(containerWidth * 0.8 / canvasWidth, 2); // Max 200% zoom
-  const zoomY = Math.min(containerHeight * 0.8 / canvasHeight, 2); // Max 200% zoom
-  
+  const zoomX = Math.min((containerWidth * 0.8) / canvasWidth, 2); // Max 200% zoom
+  const zoomY = Math.min((containerHeight * 0.8) / canvasHeight, 2); // Max 200% zoom
+
   // Use the smaller ratio to ensure it fits in both dimensions
   const optimalZoom = Math.min(zoomX, zoomY, 1); // Never zoom more than 100% for initial view
-  
-  console.log(`Optimal zoom calculated: ${optimalZoom.toFixed(2)} for canvas ${canvasWidth}x${canvasHeight} in space ${containerWidth}x${containerHeight}`);
-  
+
+  console.log(
+    `Optimal zoom calculated: ${optimalZoom.toFixed(
+      2
+    )} for canvas ${canvasWidth}x${canvasHeight} in space ${containerWidth}x${containerHeight}`
+  );
+
   return Math.max(optimalZoom, 0.1); // Minimum 10% zoom
 };
 
@@ -570,61 +600,65 @@ export const applyCanvasZoom = (canvas, zoomLevel) => {
 
   // Use CSS transform for viewport zoom with enhanced blur prevention
   const wrapper = canvas.wrapperEl;
-  
+
   // Apply CSS transform for visual zoom
   wrapper.style.transform = `scale(${zoomLevel})`;
-  wrapper.style.transformOrigin = 'center center';
-  
+  wrapper.style.transformOrigin = "center center";
+
   // Anti-aliasing and blur prevention techniques
-  wrapper.style.imageRendering = 'crisp-edges';
-  wrapper.style.imageRendering = '-webkit-optimize-contrast';
-  wrapper.style.backfaceVisibility = 'hidden';
-  wrapper.style.perspective = '1000px';
-  
+  wrapper.style.imageRendering = "crisp-edges";
+  wrapper.style.imageRendering = "-webkit-optimize-contrast";
+  wrapper.style.backfaceVisibility = "hidden";
+  wrapper.style.perspective = "1000px";
+
   // Store zoom level for reference
   canvas.zoomLevel = zoomLevel;
-  
+
   // Enhanced high-quality rendering for canvas elements
   const devicePixelRatio = window.devicePixelRatio || 1;
   const lowerCanvas = canvas.lowerCanvasEl;
   const upperCanvas = canvas.upperCanvasEl;
-  
-  [lowerCanvas, upperCanvas].forEach(canvasEl => {
+
+  [lowerCanvas, upperCanvas].forEach((canvasEl) => {
     if (canvasEl) {
-      const context = canvasEl.getContext('2d');
-      
+      const context = canvasEl.getContext("2d");
+
       // High-quality rendering settings
       context.imageSmoothingEnabled = true;
-      context.imageSmoothingQuality = 'high';
-      
+      context.imageSmoothingQuality = "high";
+
       // Additional blur prevention for canvas
-      canvasEl.style.imageRendering = 'crisp-edges';
-      canvasEl.style.imageRendering = '-webkit-optimize-contrast';
-      
+      canvasEl.style.imageRendering = "crisp-edges";
+      canvasEl.style.imageRendering = "-webkit-optimize-contrast";
+
       // For high-DPI displays, render at higher resolution
       if (devicePixelRatio > 1) {
         const computedStyle = window.getComputedStyle(canvasEl);
         const width = parseInt(computedStyle.width, 10);
         const height = parseInt(computedStyle.height, 10);
-        
+
         // Set actual canvas size at device pixel ratio
         canvasEl.width = width * devicePixelRatio;
         canvasEl.height = height * devicePixelRatio;
-        
+
         // Scale context to match device pixel ratio
         context.scale(devicePixelRatio, devicePixelRatio);
-        
+
         // Keep CSS size the same
-        canvasEl.style.width = width + 'px';
-        canvasEl.style.height = height + 'px';
+        canvasEl.style.width = width + "px";
+        canvasEl.style.height = height + "px";
       }
     }
   });
-  
+
   // Force re-render to apply changes
   canvas.requestRenderAll();
-  
-  console.log(`Canvas zoom applied: ${zoomLevel.toFixed(2)} (CSS transform with blur prevention)`);
+
+  console.log(
+    `Canvas zoom applied: ${zoomLevel.toFixed(
+      2
+    )} (CSS transform with blur prevention)`
+  );
 };
 
 /**
@@ -632,23 +666,23 @@ export const applyCanvasZoom = (canvas, zoomLevel) => {
  */
 export const centerCanvasWithZoom = (canvas) => {
   if (!canvas || !canvas.wrapperEl) return;
-  
+
   const zoom = canvas.getZoom();
   const container = canvas.wrapperEl.parentElement;
-  
+
   if (container) {
     const containerWidth = container.clientWidth;
     const containerHeight = container.clientHeight;
-    
+
     // Calculate center position accounting for zoom
-    const centerX = (containerWidth / 2) / zoom;
-    const centerY = (containerHeight / 2) / zoom;
-    
+    const centerX = containerWidth / 2 / zoom;
+    const centerY = containerHeight / 2 / zoom;
+
     // Set viewport transform to center the content
     const vpt = canvas.viewportTransform.slice();
-    vpt[4] = centerX - (canvas.getWidth() / 2);
-    vpt[5] = centerY - (canvas.getHeight() / 2);
-    
+    vpt[4] = centerX - canvas.getWidth() / 2;
+    vpt[5] = centerY - canvas.getHeight() / 2;
+
     canvas.setViewportTransform(vpt);
     canvas.requestRenderAll();
   }
@@ -663,19 +697,22 @@ export const autoFitCanvas = (canvas, containerEl) => {
   try {
     // Calculate optimal zoom
     const optimalZoom = calculateOptimalZoom(canvas, containerEl);
-    
+
     // Center the canvas first
     centerCanvas(canvas);
-    
+
     // Then apply optimal zoom
     setTimeout(() => {
       applyCanvasZoom(canvas, optimalZoom);
     }, 100);
-    
-    console.log(`Auto-fit applied: zoom ${optimalZoom.toFixed(2)} for ${canvas.width}x${canvas.height} canvas`);
-    
+
+    console.log(
+      `Auto-fit applied: zoom ${optimalZoom.toFixed(2)} for ${canvas.width}x${
+        canvas.height
+      } canvas`
+    );
   } catch (error) {
-    console.error('Error in auto-fit canvas:', error);
+    console.error("Error in auto-fit canvas:", error);
   }
 };
 
@@ -688,18 +725,17 @@ export const resetAndFitCanvas = (canvas, containerEl) => {
   try {
     // Reset any existing transforms
     const wrapper = canvas.wrapperEl;
-    wrapper.style.transform = 'translate(-50%, -50%)';
+    wrapper.style.transform = "translate(-50%, -50%)";
     canvas.zoomLevel = 1;
-    
+
     // Re-apply auto-fit
     requestAnimationFrame(() => {
       autoFitCanvas(canvas, containerEl);
     });
-    
-    console.log('Canvas zoom reset and re-fitted');
-    
+
+    console.log("Canvas zoom reset and re-fitted");
   } catch (error) {
-    console.error('Error resetting canvas zoom:', error);
+    console.error("Error resetting canvas zoom:", error);
   }
 };
 
@@ -726,7 +762,9 @@ export const resizeCanvas = (canvas, width, height) => {
 
     const oldWidth = canvas.getWidth();
     const oldHeight = canvas.getHeight();
-    console.log(`ResizeCanvas: Current size ${oldWidth}x${oldHeight} -> Target size ${width}x${height}`);
+    console.log(
+      `ResizeCanvas: Current size ${oldWidth}x${oldHeight} -> Target size ${width}x${height}`
+    );
 
     // Update canvas dimensions using multiple methods for reliability
     canvas.setDimensions({ width, height });
@@ -745,19 +783,27 @@ export const resizeCanvas = (canvas, width, height) => {
     // Force re-render
     canvas.requestRenderAll();
 
-    console.log(`Canvas successfully resized to ${width}x${height} with zoom ${(canvas.zoomLevel || 1).toFixed(2)} preserved`);
-    
+    console.log(
+      `Canvas successfully resized to ${width}x${height} with zoom ${(
+        canvas.zoomLevel || 1
+      ).toFixed(2)} preserved`
+    );
+
     // Verify the resize actually worked
     setTimeout(() => {
       const actualWidth = canvas.getWidth();
       const actualHeight = canvas.getHeight();
       if (actualWidth !== width || actualHeight !== height) {
-        console.warn(`Resize verification failed: expected ${width}x${height}, got ${actualWidth}x${actualHeight}`);
+        console.warn(
+          `Resize verification failed: expected ${width}x${height}, got ${actualWidth}x${actualHeight}`
+        );
       } else {
-        console.log(`Resize verification passed: ${actualWidth}x${actualHeight}`);
+        console.log(
+          `Resize verification passed: ${actualWidth}x${actualHeight}`
+        );
       }
     }, 100);
-    
+
     return true;
   } catch (error) {
     console.error("Error resizing canvas:", error);
@@ -768,59 +814,69 @@ export const resizeCanvas = (canvas, width, height) => {
 /**
  * Container-aware canvas resizing that waits for proper container measurement
  */
-export const resizeCanvasWithContainerAwareness = async (canvas, width, height) => {
+export const resizeCanvasWithContainerAwareness = async (
+  canvas,
+  width,
+  height
+) => {
   if (!canvas || !canvas.wrapperEl) {
-    console.error("resizeCanvasWithContainerAwareness: Canvas or wrapper not available");
+    console.error(
+      "resizeCanvasWithContainerAwareness: Canvas or wrapper not available"
+    );
     return false;
   }
 
   try {
     console.log(`Starting container-aware resize to ${width}x${height}`);
-    
+
     // Wait for container to be properly measured
     const containerEl = canvas.wrapperEl.parentElement;
     const containerInfo = await waitForContainerReady(containerEl);
-    console.log(`Container-aware resize: container ${containerInfo.width}x${containerInfo.height}, target canvas ${width}x${height}`);
+    console.log(
+      `Container-aware resize: container ${containerInfo.width}x${containerInfo.height}, target canvas ${width}x${height}`
+    );
 
     // Hide canvas during resize to prevent visual glitches
     const wrapper = canvas.wrapperEl;
     if (wrapper) {
-      wrapper.style.visibility = 'hidden';
-      wrapper.style.opacity = '0';
+      wrapper.style.visibility = "hidden";
+      wrapper.style.opacity = "0";
     }
 
     // Additional wait to ensure DOM is stable
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     // Now resize with proper container context
-    console.log('Applying canvas resize...');
+    console.log("Applying canvas resize...");
     const result = resizeCanvas(canvas, width, height);
-    
+
     // Wait for resize to complete
-    await new Promise(resolve => setTimeout(resolve, 150));
-    
+    await new Promise((resolve) => setTimeout(resolve, 150));
+
     // Additional step: ensure canvas is properly centered after resize
-    console.log('Applying undo/redo restoration sequence...');
-    
+    console.log("Applying undo/redo restoration sequence...");
+
     // Apply the EXACT same sequence as undo/redo which works correctly
     ensureCanvasVisible(canvas);
     canvas.discardActiveObject();
     canvas.calcOffset();
     centerCanvas(canvas);
-    
+
     // Wait for centering to complete
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     // Force visibility and proper state
     if (wrapper) {
-      wrapper.style.transition = 'opacity 0.3s ease-in-out';
-      wrapper.style.visibility = 'visible';
-      wrapper.style.opacity = '1';
+      wrapper.style.transition = "opacity 0.3s ease-in-out";
+      wrapper.style.visibility = "visible";
+      wrapper.style.opacity = "1";
     }
-    
+
     canvas.requestRenderAll();
-    console.log(`Container-aware resize completed: ${canvas.getWidth()}x${canvas.getHeight()}`);
-    
+    console.log(
+      `Container-aware resize completed: ${canvas.getWidth()}x${canvas.getHeight()}`
+    );
+
     return result;
   } catch (error) {
     console.error("Error in container-aware resize:", error);
@@ -834,23 +890,23 @@ export const resizeCanvasWithContainerAwareness = async (canvas, width, height) 
  */
 export const applyUndoRedoRestorationSequence = (canvas) => {
   if (!canvas) return;
-  
-  console.log('Applying undo/redo restoration sequence...');
-  
+
+  console.log("Applying undo/redo restoration sequence...");
+
   // This is the exact sequence from undo/redo that works correctly
   ensureCanvasVisible(canvas);
   canvas.discardActiveObject();
   canvas.calcOffset();
   centerCanvas(canvas);
-  
+
   // Additional step: force center after a small delay to ensure perfect positioning
   setTimeout(() => {
     centerCanvas(canvas);
     canvas.requestRenderAll();
-    console.log('Canvas properly centered and rendered');
+    console.log("Canvas properly centered and rendered");
   }, 50);
-  
-  console.log('Undo/redo restoration sequence completed');
+
+  console.log("Undo/redo restoration sequence completed");
 };
 
 export const addShapeToCanvas = async (canvas, shapeType, customProps = {}) => {
@@ -1545,7 +1601,7 @@ export const initializeHistoryManagement = (canvas) => {
   const initialCanvasData = canvas.toJSON();
   const initialState = JSON.stringify({
     canvas: initialCanvasData,
-    zoomLevel: canvas.zoomLevel || 1
+    zoomLevel: canvas.zoomLevel || 1,
   });
   canvas.historyUndo.push(initialState);
 
@@ -1559,12 +1615,12 @@ export const initializeHistoryManagement = (canvas) => {
     if (canvas.isPerformingHistory) return;
 
     canvas.mods++;
-    
+
     // Create a state object that includes both canvas data and zoom level
     const canvasData = canvas.toJSON();
     const currentState = JSON.stringify({
       canvas: canvasData,
-      zoomLevel: canvas.zoomLevel || 1
+      zoomLevel: canvas.zoomLevel || 1,
     });
 
     // Only save if different from last state
@@ -1595,7 +1651,7 @@ export const initializeHistoryManagement = (canvas) => {
 
       // Get previous state
       const previousState = canvas.historyUndo[canvas.historyUndo.length - 1];
-      
+
       // Parse the state to get both canvas data and zoom level
       const parsedState = JSON.parse(previousState);
       const canvasData = parsedState.canvas || parsedState; // Fallback for old format
@@ -1650,7 +1706,7 @@ export const initializeHistoryManagement = (canvas) => {
       // Get state from redo
       const redoState = canvas.historyRedo.pop();
       canvas.historyUndo.push(redoState);
-      
+
       // Parse the state to get both canvas data and zoom level
       const parsedState = JSON.parse(redoState);
       const canvasData = parsedState.canvas || parsedState; // Fallback for old format
