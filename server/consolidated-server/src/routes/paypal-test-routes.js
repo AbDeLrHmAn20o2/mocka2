@@ -8,7 +8,10 @@ router.get("/test", async (req, res) => {
   try {
     const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
     const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
-    const PAYPAL_BASE_URL = process.env.PAYPAL_BASE_URL;
+    const PAYPAL_BASE_URL = process.env.PAYPAL_BASE_URL || 
+      (process.env.NODE_ENV === "production" 
+        ? "https://api-m.paypal.com" 
+        : "https://api-m.sandbox.paypal.com");
 
     // Debug info (without exposing full secrets)
     const debugInfo = {

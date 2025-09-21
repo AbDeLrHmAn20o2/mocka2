@@ -1,10 +1,10 @@
 const Subscription = require("../models/subscription");
 const axios = require("axios");
 
-const PAYPAL_API =
-  process.env.NODE_ENV === "production"
+const PAYPAL_API = process.env.PAYPAL_BASE_URL || 
+  (process.env.NODE_ENV === "production"
     ? "https://api-m.paypal.com"
-    : "https://api-m.sandbox.paypal.com";
+    : "https://api-m.sandbox.paypal.com");
 
 const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
