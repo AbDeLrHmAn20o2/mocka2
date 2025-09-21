@@ -1,6 +1,7 @@
 # PayPal Configuration Fix Guide
 
 ## 🚨 **Current Issue:**
+
 ```
 PayPal access token error: {
   error: 'invalid_client',
@@ -13,6 +14,7 @@ PayPal access token error: {
 ### Step 1: Get PayPal Developer Credentials
 
 #### For Testing (Sandbox):
+
 1. Go to: https://developer.paypal.com/
 2. Login with your PayPal account
 3. Navigate to **"My Apps & Credentials"**
@@ -29,6 +31,7 @@ PayPal access token error: {
    - Client Secret (long string)
 
 #### For Production (Live):
+
 1. Same steps but under **"Live"** section
 2. **Requirements:**
    - Verified PayPal Business account
@@ -48,6 +51,7 @@ PAYPAL_BASE_URL=https://api-m.sandbox.paypal.com
 ```
 
 **For Production, change to:**
+
 ```
 PAYPAL_BASE_URL=https://api-m.paypal.com
 ```
@@ -61,11 +65,13 @@ PAYPAL_BASE_URL=https://api-m.paypal.com
 ### Step 4: Test PayPal Integration
 
 You can test if credentials are working by visiting:
+
 ```
 https://your-app.back4app.io/v1/health
 ```
 
 Should show:
+
 ```json
 {
   "status": "healthy",
@@ -78,20 +84,24 @@ Should show:
 ## 🔍 **Common Issues:**
 
 ### Issue 1: Wrong Credentials
+
 - **Symptoms**: `invalid_client` error
 - **Solution**: Double-check Client ID and Secret from PayPal developer dashboard
 
 ### Issue 2: Sandbox vs Production Mismatch
+
 - **Symptoms**: Authentication works but payments fail
 - **Solution**: Ensure PAYPAL_BASE_URL matches your credential type:
   - Sandbox: `https://api-m.sandbox.paypal.com`
   - Live: `https://api-m.paypal.com`
 
 ### Issue 3: Missing Environment Variables
+
 - **Symptoms**: "PayPal credentials not configured" error
 - **Solution**: Verify all required env vars are set in Back4App
 
 ### Issue 4: App Not Approved (Production)
+
 - **Symptoms**: Credentials work in sandbox but fail in production
 - **Solution**: Wait for PayPal app review approval (1-3 business days)
 
@@ -105,11 +115,13 @@ Should show:
 ## 🎯 **Current Status Check:**
 
 Visit your health endpoint to see current configuration:
+
 ```
 GET https://your-app.back4app.io/v1/health
 ```
 
 Expected response:
+
 ```json
 {
   "status": "healthy",

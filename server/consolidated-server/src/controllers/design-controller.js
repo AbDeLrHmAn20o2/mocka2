@@ -14,7 +14,7 @@ const designController = {
         .sort({ updatedAt: -1 })
         .skip(skip)
         .limit(limit)
-        .select("-canvasData"); // Don't include canvas data in list view for performance
+        .select("-canvasData"); // Don't include canvas data but include thumbnail for performance
 
       const total = await Design.countDocuments({ userId });
 
