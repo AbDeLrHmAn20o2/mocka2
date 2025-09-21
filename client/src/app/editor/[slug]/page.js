@@ -1,6 +1,7 @@
 "use client";
 
 import MainEditor from "@/components/editor";
+import NoSSR from "@/components/no-ssr";
 import { getUserDesigns, getUserDesignByID } from "@/services/design-service";
 import { getUserSubscription } from "@/services/subscription-service";
 import { useEditorStore } from "@/store";
@@ -160,5 +161,13 @@ export default function EditorPage() {
     );
   }
 
-  return <MainEditor />;
+  return (
+    <NoSSR fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      </div>
+    }>
+      <MainEditor />
+    </NoSSR>
+  );
 }

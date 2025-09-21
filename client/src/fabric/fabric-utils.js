@@ -6,6 +6,12 @@ import { createShape } from "./shapes/shape-factory";
  */
 const waitForContainerReady = (containerEl) => {
   return new Promise((resolve) => {
+    // Early return if not in browser environment
+    if (typeof window === "undefined") {
+      resolve({ width: 800, height: 600 }); // fallback for SSR
+      return;
+    }
+
     const checkContainer = () => {
       if (!containerEl) {
         console.log('Container element not found, using fallback dimensions');

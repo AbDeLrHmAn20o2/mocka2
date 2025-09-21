@@ -1,15 +1,15 @@
 "use client";
 
-import { centerCanvas } from "@/fabric/fabric-utils";
 import { saveCanvasState } from "@/services/design-service";
 import { debounce } from "lodash";
 import { create } from "zustand";
 
 export const useEditorStore = create((set, get) => ({
   canvas: null,
-  setCanvas: (canvas) => {
+  setCanvas: async (canvas) => {
     set({ canvas });
-    if (canvas) {
+    if (canvas && typeof window !== "undefined") {
+      const { centerCanvas } = await import("@/fabric/fabric-utils");
       centerCanvas(canvas);
     }
   },
