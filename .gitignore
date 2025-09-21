@@ -301,9 +301,15 @@ temp/
 # API keys and secrets (backup protection)
 *secret*
 *key*
-*token*
 *password*
 *credential*
+# Token files (but allow token-related source code)
+*.token
+*_token
+*-token
+token.txt
+token.json
+.token
 
 # =================================
 # PROJECT SPECIFIC
