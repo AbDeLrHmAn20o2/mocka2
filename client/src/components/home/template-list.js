@@ -9,9 +9,21 @@ import SubscriptionModal from "@/components/subscription/premium-modal";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import TemplatePreview from "./template-preview";
+import dynamic from "next/dynamic";
 import { useTemplates } from "@/hooks/useTemplates";
 import { loadTemplateData } from "@/services/template-service";
+
+// Dynamic import to prevent SSR issues
+const TemplatePreview = dynamic(() => import("./template-preview"), {
+  ssr: false,
+  loading: () => (
+    <div className="bg-white rounded-lg shadow-sm border p-4 animate-pulse">
+      <div className="aspect-video bg-gray-200 rounded mb-3"></div>
+      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+    </div>
+  ),
+});
 
 function TemplateList({
   setShowTemplatesModal,

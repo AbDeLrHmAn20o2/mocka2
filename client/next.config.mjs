@@ -133,6 +133,29 @@ const nextConfig = {
       },
     ];
   },
+
+  // Webpack configuration to prevent SSR issues
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      // Exclude fabric.js from server-side bundle
+      config.externals = config.externals || [];
+      config.externals.push('fabric');
+      
+      // Add fallback for missing modules in server environment
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        canvas: false,
+        'fabric': false,
+      };
+    }
+    
+    return config;
+  },
+
+  // Experimental features
+  experimental: {
+    esmExternals: true,
+  },
 };
 
 export default nextConfig;

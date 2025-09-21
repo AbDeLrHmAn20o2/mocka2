@@ -1,13 +1,24 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import DesignPreview from "./design-preview";
+import dynamic from "next/dynamic";
 import { DesignThumbnail } from "./design-thumbnail";
 import { Trash2, FileText } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { deleteDesign, getUserDesigns } from "@/services/design-service";
 import { useEditorStore } from "@/store";
 import { useState } from "react";
+
+// Dynamic import to prevent SSR issues
+const DesignPreview = dynamic(() => import("./design-preview"), {
+  ssr: false,
+  loading: () => (
+    <div className="bg-white rounded-lg shadow-sm border p-4 animate-pulse">
+      <div className="aspect-video bg-gray-200 rounded mb-3"></div>
+      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+    </div>
+  ),
+});
 
 function DesignList({
   listOfDesigns,
