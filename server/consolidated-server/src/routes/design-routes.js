@@ -28,4 +28,13 @@ router.post("/:id/duplicate", designController.duplicateDesign);
 // GET /api/v1/designs/category/:category - Get designs by category
 router.get("/category/:category", designController.getDesignsByCategory);
 
+// POST /api/v1/designs/template - Create design from template
+router.post("/template", designController.createFromTemplate);
+
+// POST /api/v1/designs/:id/thumbnail - Generate/update thumbnail for a design
+router.post("/:id/thumbnail", designController.generateThumbnail);
+
+// POST /api/v1/designs/fix-corrupted - Fix corrupted designs (utility endpoint)
+router.post("/fix-corrupted", designController.fixCorruptedDesigns);
+
 module.exports = router;

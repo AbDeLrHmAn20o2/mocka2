@@ -33,7 +33,7 @@ export async function saveCanvasState(
 
   try {
     const canvasData = canvas.toJSON(["id", "filters"]);
-    
+
     // Generate thumbnail for design preview
     let thumbnail = null;
     try {
@@ -42,34 +42,36 @@ export async function saveCanvasState(
       const maxThumbnailSize = 300;
       const canvasWidth = canvas.width || 800;
       const canvasHeight = canvas.height || 600;
-      
+
       // Calculate scale to fit within thumbnail bounds
-      const scale = Math.min(maxThumbnailSize / canvasWidth, maxThumbnailSize / canvasHeight);
+      const scale = Math.min(
+        maxThumbnailSize / canvasWidth,
+        maxThumbnailSize / canvasHeight
+      );
       const thumbnailWidth = Math.round(canvasWidth * scale);
       const thumbnailHeight = Math.round(canvasHeight * scale);
-      
+
       // Temporarily adjust canvas for thumbnail
       canvas.setZoom(scale);
       canvas.setDimensions({
         width: thumbnailWidth,
-        height: thumbnailHeight
+        height: thumbnailHeight,
       });
-      
+
       // Generate thumbnail as data URL
       thumbnail = canvas.toDataURL({
-        format: 'jpeg',
+        format: "jpeg",
         quality: 0.8,
-        multiplier: 1
+        multiplier: 1,
       });
-      
+
       // Restore original canvas settings
       canvas.setZoom(originalZoom);
       canvas.setDimensions({
         width: canvasWidth,
-        height: canvasHeight
+        height: canvasHeight,
       });
       canvas.requestRenderAll();
-      
     } catch (thumbnailError) {
       console.warn("Failed to generate thumbnail:", thumbnailError);
       // Continue without thumbnail if generation fails
@@ -80,7 +82,7 @@ export async function saveCanvasState(
       canvasData: JSON.stringify(canvasData),
       width: canvas.width,
       height: canvas.height,
-      thumbnail: thumbnail
+      thumbnail: thumbnail,
     };
 
     return saveDesign(designData, designId);

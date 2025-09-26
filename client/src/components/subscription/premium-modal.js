@@ -28,6 +28,12 @@ function SubscriptionModal({ isOpen, onClose }) {
   const [paymentStep, setPaymentStep] = useState("features");
   const subscriptionStatus = getSubscriptionStatus(userSubscription);
 
+  const handleClose = () => {
+    if (typeof onClose === "function") {
+      onClose(false); // Pass false to close the modal
+    }
+  };
+
   useEffect(() => {
     if (isOpen) {
       setPaymentStep("features");
@@ -85,7 +91,7 @@ function SubscriptionModal({ isOpen, onClose }) {
 
   if (userSubscription?.isPremium) {
     return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
+      <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="sm:max-w-[500px] p-0 gap-0 overflow-hidden">
           <div className="bg-gradient-to-br from-yellow-50 to-amber-50 p-8 text-center">
             <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -121,7 +127,7 @@ function SubscriptionModal({ isOpen, onClose }) {
               )}
             </div>
 
-            <Button onClick={onClose} className="w-full">
+            <Button onClick={handleClose} className="w-full">
               Continue Creating
             </Button>
           </div>
@@ -138,7 +144,7 @@ function SubscriptionModal({ isOpen, onClose }) {
         </DialogTitle>
         <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600 p-8 text-white relative">
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="absolute top-4 right-4 p-2 hover:bg-white/20 rounded-full transition-colors"
           >
             <X className="h-5 w-5" />
@@ -223,7 +229,6 @@ function SubscriptionModal({ isOpen, onClose }) {
                 ? "Renew Premium Subscription"
                 : "Start Premium Subscription"}
             </Button>
-
           </div>
         )}
 

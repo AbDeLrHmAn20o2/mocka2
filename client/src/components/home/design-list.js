@@ -138,8 +138,8 @@ function DesignList({
                   className="aspect-square w-full border-2 border-slate-200 rounded-2xl overflow-hidden cursor-pointer hover:border-blue-400 transition-all duration-300 group shadow-lg hover:shadow-2xl bg-white"
                 >
                   {design?.thumbnail ? (
-                    <img 
-                      src={design.thumbnail} 
+                    <img
+                      src={design.thumbnail}
                       alt={design.name}
                       className="w-full h-full object-cover"
                       loading="lazy"
